@@ -1,0 +1,79 @@
+{
+  "entities": {
+    "Category": {
+      "title": "Category",
+      "description": "Menu categories (Smash Burgers, Tenders, Frites & Extras, Boissons, Formules)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nom": { "type": "string" },
+        "ordre": { "type": "number" }
+      },
+      "required": ["nom", "ordre"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Artisanal smash burger, sides, tenders, drinks, or combos",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nom": { "type": "string" },
+        "description": { "type": "string" },
+        "prix": { "type": "number" },
+        "photoUrl": { "type": "string" },
+        "categorieId": { "type": "string" },
+        "disponible": { "type": "boolean" },
+        "ordre": { "type": "number" }
+      },
+      "required": ["nom", "description", "prix", "photoUrl", "categorieId", "disponible", "ordre"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer order with cash on delivery and real-time status tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "numeroCommande": { "type": "string" },
+        "nomClient": { "type": "string" },
+        "telephone": { "type": "string" },
+        "adresse": { "type": "string" },
+        "commune": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "nom": { "type": "string" },
+              "quantite": { "type": "number" },
+              "prix": { "type": "number" },
+              "subtotal": { "type": "number" }
+            },
+            "required": ["nom", "quantite", "prix"]
+          }
+        },
+        "total": { "type": "number" },
+        "modePaiement": { "type": "string" },
+        "statut": {
+          "type": "string",
+          "enum": ["Nouvelle", "En préparation", "Prête", "En livraison", "Livrée", "Refusée"]
+        },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["numeroCommande", "nomClient", "telephone", "adresse", "commune", "items", "total", "modePaiement", "statut", "createdAt"]
+    },
+    "RestaurantSettings": {
+      "title": "RestaurantSettings",
+      "description": "Operating status, hours, phone, and delivery settings",
+      "type": "object",
+      "properties": {
+        "restaurantName": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "deliveryFee": { "type": "number" },
+        "openingHours": { "type": "string" },
+        "isOpen": { "type": "boolean" },
+        "announcement": { "type": "string" }
+      }
+    }
+  }
+}

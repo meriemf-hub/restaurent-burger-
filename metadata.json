@@ -1,0 +1,6 @@
+{
+  "name": "Smash'art Hydra",
+  "description": "Site de commande en ligne pour le restaurant Smash'art à Hydra, Alger. Smash burgers artisanaux préparés minute sur plaque d'acier à +260°C avec buns Brioch'art et livraison sur le Grand Alger avec paiement en espèces.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

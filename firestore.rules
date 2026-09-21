@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'faresmeriem62@gmail.com' ||
+        request.auth.token.email == 'admin@smashart-hydra.dz' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    // Catégories : lecture publique, création/modification/suppression réservée exclusivement aux administrateurs
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Produits : lecture publique, création/modification/suppression réservée exclusivement aux administrateurs
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Paramètres restaurant (ouvert/fermé, horaires, frais) : lecture publique, gestion réservée exclusivement aux administrateurs
+    match /restaurantSettings/{settingId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Commandes :
+    // - get : un client authentifié ne peut lire QUE sa propre commande. L'admin peut lire toute commande.
+    //         Aucun utilisateur non-authentifié ne peut lire une commande simplement en connaissant son ID.
+    // - list : un client ne peut lister que ses propres commandes. L'admin peut lister toutes les commandes.
+    // - create : création réservée aux administrateurs. Les clients réguliers ne peuvent PAS créer
+    //            directement de commandes dans Firestore depuis le navigateur.
+    //            Le backend de confiance (Firebase Admin SDK) utilise les privilèges de compte de service
+    //            côté serveur pour persister les commandes vérifiées (sans secret dans les règles).
+    // - update, delete : réservés exclusivement aux administrateurs.
+    match /orders/{orderId} {
+      allow get: if isAdmin() || (isSignedIn() && resource.data.customerId == request.auth.uid);
+      allow list: if isAdmin() || (isSignedIn() && resource.data.customerId == request.auth.uid);
+      allow create: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+    }
+  }
+}
